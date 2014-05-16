@@ -7,10 +7,8 @@
 *.sln.docstates
 
 # Build results
-[Dd]ebug/
-[Dd]ebugPublic/
-[Rr]elease/
-[Rr]eleases/
+AR_Simple/Debug/
+AR_Simple/Release/
 x64/
 build/
 bld/
@@ -33,6 +31,7 @@ TestResult.xml
 [Rr]eleasePS/
 dlldata.c
 
+*.exe
 *_i.c
 *_p.c
 *_i.h
