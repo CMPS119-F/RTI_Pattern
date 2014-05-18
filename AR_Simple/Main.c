@@ -132,6 +132,7 @@ static void cleanup()
 {
 	arVideoCapStop();
 	arVideoClose();
+	
 	argCleanup();
 }
 
@@ -157,11 +158,11 @@ static void mainLoop(void)
 	int             marker_num;
 
 	argDrawMode2D();
-	argDispImage(dataPtr, 0, 0);
+	//argDispImage(dataPtr, 0, 0);
 
 	// detect the markers in the video frame
 	if (arDetectMarker(dataPtr, thresh, &marker_info, &marker_num) < 0) 
-	{
+	{		
 		cleanup();
 		exit(0);
 	}
@@ -170,7 +171,7 @@ static void mainLoop(void)
 	
 	// If you uncomment the following code the program will run until it detects at least 1 marker.
 	// It will then print out the pattern locations and exit
-	/*if (marker_num > 0)
+	if (marker_num > 0)
 	{
 		printf("Found %i markers:\n", marker_num);
 		for (int i = 0; i < marker_num; i++) // Print position of each marker
@@ -178,18 +179,19 @@ static void mainLoop(void)
 			printf("marker %i: %f, %f\n", i, marker_info[i].pos[0], marker_info[i].pos[1]);
 		}
 		exit(0);
-	}*/
+	}
 
 	argSwapBuffers();
 }
 
 int main(int argc, char **argv)
 {
-	if (loadImage("images/image.jpg") == -1) exit(1); // Load the test image into memory
+	if (loadImage("images/image_huge.jpg") == -1) exit(1); // Load the test image into memory
 
 	glutInit(&argc, argv);
 	init();
 
-	argMainLoop(NULL, keyEvent, mainLoop);
+	//argMainLoop(NULL, keyEvent, mainLoop);
+	mainLoop();
 	return (0);
 }
