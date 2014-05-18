@@ -21,10 +21,11 @@
 #include <AR/param.h>
 #include <AR/ar.h>
 
+// SDL
 #include <SDL.h>
 #include <SDL_image.h>
 
-//Util
+#include "FileWriter.h"
 
 // Global variables
 ARUint8*		dataPtr;
@@ -83,8 +84,6 @@ int loadImage(char* filename)
 	}
 	img_width = img->w;
 	img_height = img->h;
-
-	printf("Image size: %i x %i\n", img->w, img->h);
 
 	dataPtr = calloc(img->w * img->h * 4, sizeof(ARUint8)); // Allocate space for image data
 
@@ -187,10 +186,11 @@ void get_midpoint(double* midpoint, double** pair){
 }
 
 /*
-Main loop for ARToolkit. Runs until program exits
+	Main loop for ARToolkit. Runs until program exits
+	img_name: The name of the image file. This is used when writing results to csv file
 */
 
-static void mainLoop(void)
+static void mainLoop(char* img_name)
 {
 	ARMarkerInfo    *marker_info;
 	int             marker_num;
@@ -218,19 +218,52 @@ static void mainLoop(void)
 		get_pair(&pair, marker_info, marker_num);
 		get_midpoint(&midpoint, &pair);
 		printf("Center is: %5i,%5i\n", (int)midpoint[0], (int)midpoint[1]);
-		exit(0);
+		writeLine(img_name, (int)midpoint[0], (int)midpoint[1]);
 	}
-	else{
+	else
+	{
 		printf("%i patterns isnt enough to find a center point!\n", marker_num);
 	}
-	argSwapBuffers();
+	//argSwapBuffers();
 }
 
 int main(int argc, char **argv)
 {
-	if (loadImage("images/image_huge.jpg") == -1) exit(1); // Load the test image into memory
+	if (argc == 1) // If no images were provided
+	{
+		printf("USAGE: AR_Simple.exe img1.jpg img2.jpg ...\n");
+		exit(1);
+	}
+
+	for (int i = 1; i < argc; i++) // Check that each arg is a .jpg image
+	{
+		if (strstr(argv[i], ".jpg") == NULL)
+		{
+			printf("Images must be .jpg format. %s is not a valid file\n", argv[i]);
+			exit(1);
+		}
+	}
+
+	if (loadImage(argv[1]) == -1) // Load the first image (so init() can properly register the image size)
+		exit(1);
+
 	glutInit(&argc, argv);
 	init();
-	mainLoop();
-	return (0);
+
+	createOutputFile(); // Delete any old output.csv file and create a fresh one
+	for (int i = 1; i < argc; i++) // For each input image
+	{
+		if (loadImage(argv[i]) == -1)
+		{
+			printf("Failed to load image: '%s' It will be skipped...\n", argv[i]);
+			continue;
+		}
+		printf("Running on %s:\n", argv[i]);
+		mainLoop(argv[i]); // Detect sphere location on this image
+		printf("=================== Done! ===================\n");
+	}
+	printf("============================\n");
+	printf("See output.csv for results\n");
+	printf("============================\n");
+	return 0;
 }
