@@ -125,31 +125,6 @@ static void init()
 	argInit(&cparam, 1.0, 0, 0, 0, 0); // open the graphics window
 }
 
-/* 
-	(This probably is not needed anymore, but leaving it be for now...)
-cleanup function called when program exits 
-
-*/
-static void cleanup()
-{
-	arVideoCapStop();
-	arVideoClose();
-	argCleanup();
-}
-
-/*
-	Handles key press events while program is running
-*/
-static void keyEvent(unsigned char key, int x, int y)
-{
-	// quit if the ESC key is pressed
-	if (key == 0x1b) 
-	{
-		cleanup();
-		exit(0);
-	}
-}
-
 /*
 	Helper functions, ideall we should move these to another file instead of main.c
 */
@@ -200,8 +175,7 @@ static void mainLoop(char* img_name)
 	// detect the markers in the video frame
 	if (arDetectMarker(dataPtr, thresh, &marker_info, &marker_num) < 0) 
 	{		
-		cleanup();
-		exit(0);
+		exit(0); // Quit if marker detection failed
 	}
 	printf("%i patterns found\n", marker_num);
 	// If you uncomment the following code the program will run until it detects at least 1 marker.
