@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 // OpenGL & GLUT
 #ifndef __APPLE__
@@ -22,6 +23,8 @@
 
 #include <SDL.h>
 #include <SDL_image.h>
+
+//Util
 
 // Global variables
 ARUint8*		dataPtr;
@@ -132,7 +135,6 @@ static void cleanup()
 {
 	arVideoCapStop();
 	arVideoClose();
-	
 	argCleanup();
 }
 
@@ -150,15 +152,50 @@ static void keyEvent(unsigned char key, int x, int y)
 }
 
 /*
-	Main loop for ARToolkit. Runs until program exits
+	Helper functions, ideall we should move these to another file instead of main.c
 */
+
+double get_dist(double* coord_1, double* coord_2){
+	double result = sqrt(pow((coord_2[1] - coord_1[1]), 2) + pow((coord_2[0] - coord_2[1]), 2));
+	return  result;
+}
+
+void get_pair(double** pair, ARMarkerInfo* marker_info, int marker_num){
+	double ab = get_dist(marker_info[0].pos, marker_info[1].pos);
+	double ac = get_dist(marker_info[0].pos, marker_info[2].pos);
+	double bc = get_dist(marker_info[1].pos, marker_info[2].pos);
+	double max = max(max(ab, ac), bc);
+	if (max == ab){
+		pair[0] = marker_info[0].pos;
+		pair[1] = marker_info[1].pos;
+	}
+	else if (max == ac){
+		pair[0] = marker_info[0].pos;
+		pair[1] = marker_info[2].pos;
+
+	}
+	else if (max == bc){
+		pair[0] = marker_info[1].pos;
+		pair[1] = marker_info[2].pos;
+
+	}
+}
+
+void get_midpoint(double* midpoint, double** pair){
+	midpoint[0] = (max(pair[0][0], pair[1][0]) + min(pair[0][0], pair[1][0])) / 2.0;
+	midpoint[1] = (max(pair[0][1], pair[1][1]) + min(pair[0][1], pair[1][1])) / 2.0;
+}
+
+/*
+Main loop for ARToolkit. Runs until program exits
+*/
+
 static void mainLoop(void)
 {
 	ARMarkerInfo    *marker_info;
 	int             marker_num;
 
 	argDrawMode2D();
-	//argDispImage(dataPtr, 0, 0);
 
 	// detect the markers in the video frame
 	if (arDetectMarker(dataPtr, thresh, &marker_info, &marker_num) < 0) 
@@ -166,32 +203,34 @@ static void mainLoop(void)
 		cleanup();
 		exit(0);
 	}
-
 	printf("%i patterns found\n", marker_num);
-	
 	// If you uncomment the following code the program will run until it detects at least 1 marker.
 	// It will then print out the pattern locations and exit
-	if (marker_num > 0)
+	if (marker_num > 2)
 	{
-		printf("Found %i markers:\n", marker_num);
-		for (int i = 0; i < marker_num; i++) // Print position of each marker
-		{
+		//printf("Found %i markers:\n", marker_num);
+		/*for (int i = 0; i < marker_num; i++) // Print position of each marker
+		{	
 			printf("marker %i: %f, %f\n", i, marker_info[i].pos[0], marker_info[i].pos[1]);
-		}
+		}*/
+		double midpoint[2];
+		double pair[2][2];
+		get_pair(&pair, marker_info, marker_num);
+		get_midpoint(&midpoint, &pair);
+		printf("Center is: %5i,%5i\n", (int)midpoint[0], (int)midpoint[1]);
 		exit(0);
 	}
-
+	else{
+		printf("%i patterns isnt enough to find a center point!\n", marker_num);
+	}
 	argSwapBuffers();
 }
 
 int main(int argc, char **argv)
 {
 	if (loadImage("images/image_huge.jpg") == -1) exit(1); // Load the test image into memory
-
 	glutInit(&argc, argv);
 	init();
-
-	//argMainLoop(NULL, keyEvent, mainLoop);
 	mainLoop();
 	return (0);
 }
