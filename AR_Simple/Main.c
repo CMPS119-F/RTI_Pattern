@@ -124,6 +124,7 @@ static void mainLoop(char* img_name)
 	else
 	{
 		printf("%i patterns isnt enough to find a center point!\n", marker_num);
+		writeLine(img_name, 0, 0);
 	}
 	//argSwapBuffers();
 }
@@ -150,21 +151,21 @@ int main(int argc, char **argv)
 		exit(1);
 
 	glutInit(&argc, argv);
-	init();
 
 	createOutputFile(); // Delete any old output.csv file and create a fresh one
 	for (int i = 1; i < argc; i++) // For each input image
 	{
-		dataPtr = loadImage(argv[1], dataPtr, &img_width, &img_height);
+		dataPtr = loadImage(argv[i], dataPtr, &img_width, &img_height);
 		if (dataPtr == NULL)
 		{
 			printf("Failed to load image: '%s' It will be skipped...\n", argv[i]);
 			continue;
 		}
+		init(); // Initialize ARToolkit for this size of image
 		printf("Running on %s:\n", argv[i]);
 		mainLoop(argv[i]); // Detect sphere location on this image
 		free(dataPtr);
-		printf("=================== Done! ===================\n");
+		printf("=================== Done! ===================\n\n");
 	}
 	printf("============================\n");
 	printf("See output.csv for results\n");
