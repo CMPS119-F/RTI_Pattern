@@ -20,17 +20,24 @@
 #include <AR/video.h>
 #include <AR/param.h>
 #include <AR/ar.h>
+#include <AR/arMulti.h>
 
 #include "FileWriter.h"
 #include "ImageLoader.h"
+#include "object.h"
 
 // Global variables
 ARUint8*		dataPtr;
 int             img_width, img_height; // With and height of loaded image
 int             thresh = 100;
 
+char* patt_name = "Data/multi.pattern"; // The specs for the patterns to look for
+ARMultiMarkerInfoT* config;
+
 char           *cparam_name = "Data/camera_para.dat";
 ARParam         cparam;
+ObjectData_T* object;
+int objectNum; // Number of patterns in file pointed to by patt_name
 
 /*
 	Initialize ARToolkit
@@ -49,6 +56,11 @@ static void init()
 	arParamChangeSize(&wparam, img_width, img_height, &cparam);
 	arInitCparam(&cparam);
 
+	if ((object = read_ObjData(patt_name, &objectNum)) == NULL)
+	{
+		exit(1);
+	}
+
 	argInit(&cparam, 1.0, 0, 0, 0, 0); // open the graphics window
 }
 
@@ -62,23 +74,17 @@ double get_dist(double* coord_1, double* coord_2){
 }
 
 void get_pair(double** pair, ARMarkerInfo* marker_info, int marker_num){
-	double ab = get_dist(marker_info[0].pos, marker_info[1].pos);
-	double ac = get_dist(marker_info[0].pos, marker_info[2].pos);
-	double bc = get_dist(marker_info[1].pos, marker_info[2].pos);
-	double max = max(max(ab, ac), bc);
-	if (max == ab){
-		pair[0] = marker_info[0].pos;
-		pair[1] = marker_info[1].pos;
-	}
-	else if (max == ac){
-		pair[0] = marker_info[0].pos;
-		pair[1] = marker_info[2].pos;
-
-	}
-	else if (max == bc){
-		pair[0] = marker_info[1].pos;
-		pair[1] = marker_info[2].pos;
-
+	double max = 0;
+	double curr = 0;
+	for (int i = 0; i < marker_num; i++){
+		for (int j = 0; j < marker_num; j++){
+			curr = get_dist(marker_info[i].pos, marker_info[j].pos);
+			if (curr >= max) {
+				max = curr;
+				pair[0] = marker_info[i].pos;
+				pair[1] = marker_info[j].pos;
+			}
+		}
 	}
 }
 
@@ -104,10 +110,20 @@ static void mainLoop(char* img_name)
 	{		
 		exit(0); // Quit if marker detection failed
 	}
-	printf("%i patterns found\n", marker_num);
-	// If you uncomment the following code the program will run until it detects at least 1 marker.
-	// It will then print out the pattern locations and exit
-	if (marker_num > 2)
+
+	printf("%d potential markers found. Patterns ", marker_num);
+	int pattern_count = 0;
+	for (int i = 0; i < marker_num; i++)
+	{
+		if (marker_info[i].id != -1) pattern_count++; // Keep count of recognized patterns
+		for (int j = 0; j < objectNum; j++) // Check which pattern this is
+		{
+			if (marker_info[i].id == object[j].id) printf("%s ", object[j].name);
+		}
+	}
+	printf("have been identified.\n");
+
+	if (pattern_count > 2) // If at least 2 known patterns have been found.
 	{
 		//printf("Found %i markers:\n", marker_num);
 		/*for (int i = 0; i < marker_num; i++) // Print position of each marker

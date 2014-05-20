@@ -1,0 +1,26 @@
+#the number of patterns to be recognized
+4
+
+#marker 1
+A
+Data/patt.a
+40.0
+0.0 0.0
+
+#marker 2
+B
+Data/patt.b
+40.0
+0.0 0.0
+
+#marker 3
+D
+Data/patt.d
+40.0
+0.0 0.0
+
+#marker 4
+G
+Data/patt.g
+40.0
+0.0 0.0

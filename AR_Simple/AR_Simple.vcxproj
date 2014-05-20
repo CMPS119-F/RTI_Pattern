@@ -60,7 +60,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libARd.lib;libARgsubd.lib;libARvideod.lib;opengl32.lib;glu32.lib;glut32.lib;SDL2.lib;SDL2_image.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libARd.lib;libARMultid.lib;libARgsubd.lib;libARvideod.lib;opengl32.lib;glu32.lib;glut32.lib;SDL2.lib;SDL2_image.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -81,17 +81,19 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libAR.lib;libARgsub.lib;libARvideo.lib;opengl32.lib;glu32.lib;glut32.lib;SDL2.lib;SDL2_image.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libAR.lib;libARMulti.lib;libARgsub.lib;libARvideo.lib;opengl32.lib;glu32.lib;glut32.lib;SDL2.lib;SDL2_image.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="FileWriter.c" />
     <ClCompile Include="ImageLoader.c" />
     <ClCompile Include="Main.c" />
+    <ClCompile Include="object.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FileWriter.h" />
     <ClInclude Include="ImageLoader.h" />
+    <ClInclude Include="object.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
