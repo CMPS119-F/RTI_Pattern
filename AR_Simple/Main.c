@@ -37,7 +37,7 @@ ARMultiMarkerInfoT* config;
 char           *cparam_name = "Data/camera_para.dat";
 ARParam         cparam;
 ObjectData_T* object;
-int objectNum; // Number of patterns in file pointed to by patt_name
+int objectNum = -1; // Number of patterns in file pointed to by patt_name
 
 /*
 	Initialize ARToolkit
@@ -56,9 +56,12 @@ static void init()
 	arParamChangeSize(&wparam, img_width, img_height, &cparam);
 	arInitCparam(&cparam);
 
-	if ((object = read_ObjData(patt_name, &objectNum)) == NULL)
+	if (objectNum == -1) // If pattern data has not been loaded yet
 	{
-		exit(1);
+		if ((object = read_ObjData(patt_name, &objectNum)) == NULL)
+		{
+			exit(1);
+		}
 	}
 
 	argInit(&cparam, 1.0, 0, 0, 0, 0); // open the graphics window
@@ -108,20 +111,32 @@ static void mainLoop(char* img_name)
 	// detect the markers in the video frame
 	if (arDetectMarker(dataPtr, thresh, &marker_info, &marker_num) < 0) 
 	{		
-		exit(0); // Quit if marker detection failed
+		printf("Marker detection (arDetectMarker) failed on %s. Skipping this image...\n", img_name);
+		return;
 	}
 
-	printf("%d potential markers found. Patterns ", marker_num);
+	printf("%d potential markers found...Patterns ", marker_num);
 	int pattern_count = 0;
+
+	/*for (int j = 0; j < objectNum; j++) // For debugging. Print pattern id's
+	{
+		printf("marker %s id: %d\n", object[j].name, object[j].id);
+	}*/
+
 	for (int i = 0; i < marker_num; i++)
 	{
-		if (marker_info[i].id != -1) pattern_count++; // Keep count of recognized patterns
-		for (int j = 0; j < objectNum; j++) // Check which pattern this is
+		if (marker_info[i].id != -1) // If this marker matches a pattern
 		{
-			if (marker_info[i].id == object[j].id) printf("%s ", object[j].name);
+			//printf("Marker id: %d\n", marker_info[i].id); // For debugging
+			pattern_count++; // Keep count of recognized patterns
+			for (int j = 0; j < objectNum; j++) // Check which pattern this is
+			{
+				if (marker_info[i].id == object[j].id) printf("%s ", object[j].name);
+			}
 		}
 	}
-	printf("have been identified.\n");
+	if (pattern_count == 0) printf("...no patterns could be identified!\n");
+	else printf("have been identified.\n");
 
 	if (pattern_count > 2) // If at least 2 known patterns have been found.
 	{
