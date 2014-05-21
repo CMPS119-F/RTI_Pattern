@@ -115,28 +115,26 @@ static void mainLoop(char* img_name)
 		return;
 	}
 
-	printf("%d potential markers found...Patterns ", marker_num);
+	printf("%d potential markers found\n", marker_num);
+	printf("The following patterns have been identified: ");
 	int pattern_count = 0;
-
-	/*for (int j = 0; j < objectNum; j++) // For debugging. Print pattern id's
-	{
-		printf("marker %s id: %d\n", object[j].name, object[j].id);
-	}*/
 
 	for (int i = 0; i < marker_num; i++)
 	{
 		if (marker_info[i].id != -1) // If this marker matches a pattern
 		{
-			//printf("Marker id: %d\n", marker_info[i].id); // For debugging
 			pattern_count++; // Keep count of recognized patterns
 			for (int j = 0; j < objectNum; j++) // Check which pattern this is
 			{
-				if (marker_info[i].id == object[j].id) printf("%s ", object[j].name);
+				if (marker_info[i].id == object[j].id)
+				{
+					printf("%s ", object[j].name);
+				}
 			}
 		}
 	}
-	if (pattern_count == 0) printf("...no patterns could be identified!\n");
-	else printf("have been identified.\n");
+	if (pattern_count == 0) printf("No patterns could be identified...\n");
+	else printf("\n");
 
 	if (pattern_count > 2) // If at least 2 known patterns have been found.
 	{
