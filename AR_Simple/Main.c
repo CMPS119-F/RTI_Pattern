@@ -108,8 +108,6 @@ static void mainLoop(char* img_name)
 	ARMarkerInfo    *marker_info;
 	int             marker_num;
 
-	argDrawMode2D();
-
 	// detect the markers in the video frame
 	if (arDetectMarker(dataPtr, thresh, &marker_info, &marker_num) < 0) 
 	{		
@@ -131,6 +129,7 @@ static void mainLoop(char* img_name)
 				if (marker_info[i].id == object[j].id)
 				{
 					printf("%s ", object[j].name);
+					break;
 				}
 			}
 		}
@@ -140,11 +139,6 @@ static void mainLoop(char* img_name)
 
 	if (pattern_count > 2) // If at least 2 known patterns have been found.
 	{
-		//printf("Found %i markers:\n", marker_num);
-		/*for (int i = 0; i < marker_num; i++) // Print position of each marker
-		{	
-			printf("marker %i: %f, %f\n", i, marker_info[i].pos[0], marker_info[i].pos[1]);
-		}*/
 		double midpoint[2];
 		double pair[2][2];
 		get_pair(&pair, marker_info, marker_num);
@@ -157,7 +151,6 @@ static void mainLoop(char* img_name)
 		printf("%i patterns isnt enough to find a center point!\n", marker_num);
 		writeLine(img_name, 0, 0);
 	}
-	//argSwapBuffers();
 }
 
 int main(int argc, char **argv)
@@ -176,12 +169,6 @@ int main(int argc, char **argv)
 			exit(1);
 		}
 	}
-
-	dataPtr = loadImage(argv[1], dataPtr, &img_width, &img_height); // Load the first image (so init() can properly register the image size)
-	if (dataPtr == NULL) // If image failed to load
-		exit(1);
-
-	glutInit(&argc, argv);
 
 	createOutputFile(); // Delete any old output.csv file and create a fresh one
 	for (int i = 1; i < argc; i++) // For each input image

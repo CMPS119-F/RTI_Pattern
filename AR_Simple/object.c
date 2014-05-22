@@ -38,8 +38,6 @@ ObjectData_T *read_ObjData( char *name, int *objectnum )
     char           buf[256], buf1[256];
     int            i;
 
-	//printf("Opening Data File %s\n",name); // For debugging
-
     if( (fp=fopen(name, "r")) == NULL ) {
 		printf("Can't find the file - quitting \n");
 		return(0);
@@ -47,8 +45,6 @@ ObjectData_T *read_ObjData( char *name, int *objectnum )
 
     get_buff(buf, 256, fp);
     if( sscanf(buf, "%d", objectnum) != 1 ) {fclose(fp); return(0);}
-
-	//printf("About to load %d Models\n",*objectnum); // For debugging
 
     object = (ObjectData_T *)malloc( sizeof(ObjectData_T) * *objectnum );
     if( object == NULL ) return(0);
@@ -60,8 +56,6 @@ ObjectData_T *read_ObjData( char *name, int *objectnum )
         if( sscanf(buf, "%s", object[i].name) != 1 ) {
             fclose(fp); free(object); return(0);
         }
-
-		//printf("Read in No.%d \n", i+1); // For debugging
 
         get_buff(buf, 256, fp);
         if( sscanf(buf, "%s", buf1) != 1 ) {
