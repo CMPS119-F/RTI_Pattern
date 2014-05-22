@@ -68,32 +68,34 @@ static void init()
 }
 
 /*
-	Helper functions, ideall we should move these to another file instead of main.c
+	Helper functions, ideally we should move these to another file instead of main.c
 */
 
 double get_dist(double* coord_1, double* coord_2){
-	double result = sqrt(pow((coord_2[1] - coord_1[1]), 2) + pow((coord_2[0] - coord_2[1]), 2));
+	double result = sqrt(pow(coord_2[1] - coord_1[1], 2) + pow(coord_2[0] - coord_1[0], 2));
 	return  result;
 }
 
-void get_pair(double** pair, ARMarkerInfo* marker_info, int marker_num){
+void get_pair(double** pair, ARMarkerInfo *marker_info, int marker_num){
 	double max = 0;
 	double curr = 0;
 	for (int i = 0; i < marker_num; i++){
-		for (int j = 0; j < marker_num; j++){
-			curr = get_dist(marker_info[i].pos, marker_info[j].pos);
-			if (curr >= max) {
-				max = curr;
-				pair[0] = marker_info[i].pos;
-				pair[1] = marker_info[j].pos;
+		for (int j = 0; j < marker_num, j != i; j++){
+			if (marker_info[i].id != -1 && marker_info[i].id != -1){
+				curr = get_dist(marker_info[i].pos, marker_info[j].pos);
+				if (curr > max) {
+					max = curr;
+					pair[0] = marker_info[i].pos;
+					pair[1] = marker_info[j].pos;
+				}
 			}
 		}
 	}
 }
 
 void get_midpoint(double* midpoint, double** pair){
-	midpoint[0] = (max(pair[0][0], pair[1][0]) + min(pair[0][0], pair[1][0])) / 2.0;
-	midpoint[1] = (max(pair[0][1], pair[1][1]) + min(pair[0][1], pair[1][1])) / 2.0;
+	midpoint[0] = (pair[0][0] + pair[1][0]) / 2.0;
+	midpoint[1] = (pair[0][1] + pair[1][1]) / 2.0;
 }
 
 /*
