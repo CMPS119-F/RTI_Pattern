@@ -97,25 +97,14 @@ void get_pair(double** pair, ARMarkerInfo *marker_info, int marker_num, int patt
 {
 	double max = 0;
 	double curr = 0;
-	if (pattern_num == 4) // If all 4 patterns found, just return position of A and G marker
-	{
-		for (int i = 0; i < marker_num; i++)
-		{
-			if (marker_info[i].id == 0) pair[0] = marker_info[i].pos;
-			else if (marker_info[i].id == 3) pair[1] = marker_info[i].pos;
-		}
-	}
-	else // If 3 patterns found, find the 2 markers furthest apart
-	{
-		for (int i = 0; i < marker_num; i++) {
-			for (int j = 0; j < marker_num, j != i; j++) {
-				if (marker_info[i].id != -1 && marker_info[i].id != -1) {
-					curr = get_dist(marker_info[i].pos, marker_info[j].pos);
-					if (curr > max) {
-						max = curr;
-						pair[0] = marker_info[i].pos;
-						pair[1] = marker_info[j].pos;
-					}
+	for (int i = 0; i < marker_num; i++) {
+		for (int j = 0; j < marker_num, j != i; j++) {
+			if (marker_info[i].id != -1 && marker_info[j].id != -1) {
+				curr = get_dist(marker_info[i].pos, marker_info[j].pos);
+				if (curr > max) {
+					max = curr;
+					pair[0] = marker_info[i].pos;
+					pair[1] = marker_info[j].pos;
 				}
 			}
 		}
@@ -186,7 +175,8 @@ static void mainLoop(char* img_name)
 			{
 				if (marker_info[i].id == object[j].id)
 				{
-					printf("%s ", object[j].name);
+					printf("%s (%.0f, %.0f)\n", object[j].name, marker_info[i].pos[0], marker_info[i].pos[1]);
+					//printf("%s ", object[j].name);
 					break;
 				}
 			}
