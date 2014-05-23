@@ -74,7 +74,13 @@ static void init()
 	Helper functions, ideally we should move these to another file instead of main.c
 */
 
-double get_dist(double* coord_1, double* coord_2){
+/*
+	Get the distance between two points
+	coord_1: the first point
+	coord_2: the second point
+*/
+double get_dist(double* coord_1, double* coord_2)
+{
 	double result = sqrt(pow(coord_2[1] - coord_1[1], 2) + pow(coord_2[0] - coord_1[0], 2));
 	return  result;
 }
@@ -116,7 +122,13 @@ void get_pair(double** pair, ARMarkerInfo *marker_info, int marker_num, int patt
 	}
 }
 
-void get_midpoint(double* midpoint, double** pair){
+/*
+	Calculate the midpoint between two x,y, points
+	midpoint: array to fill with the x,y position
+	pair: the pair of x,y points to use for the calculation
+*/
+void get_midpoint(double* midpoint, double** pair)
+{
 	midpoint[0] = (pair[0][0] + pair[1][0]) / 2.0;
 	midpoint[1] = (pair[0][1] + pair[1][1]) / 2.0;
 }
