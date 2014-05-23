@@ -175,8 +175,7 @@ static void mainLoop(char* img_name)
 			{
 				if (marker_info[i].id == object[j].id)
 				{
-					printf("%s (%.0f, %.0f)\n", object[j].name, marker_info[i].pos[0], marker_info[i].pos[1]);
-					//printf("%s ", object[j].name);
+					printf("%s ", object[j].name);
 					break;
 				}
 			}
