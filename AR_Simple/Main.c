@@ -173,7 +173,7 @@ int main(int argc, char **argv)
 	createOutputFile(); // Delete any old output.csv file and create a fresh one
 	for (int i = 1; i < argc; i++) // For each input image
 	{
-		dataPtr = loadImage(argv[i], dataPtr, &img_width, &img_height);
+		dataPtr = loadImage(argv[i], &img_width, &img_height);
 		if (dataPtr == NULL)
 		{
 			printf("Failed to load image: '%s' It will be skipped...\n", argv[i]);

@@ -33,7 +33,7 @@ Uint32 getpixel(SDL_Surface *surface, int x, int y)
 	}
 }
 
-ARUint8* loadImage(char* filename, ARUint8* dataPtr, int* w, int* h)
+ARUint8* loadImage(char* filename, int* w, int* h)
 {
 	SDL_Surface* img = IMG_Load(filename);
 	if (!img)
@@ -44,7 +44,7 @@ ARUint8* loadImage(char* filename, ARUint8* dataPtr, int* w, int* h)
 	*w = img->w; // Assigned width and height to the given pointers
 	*h = img->h;
 
-	dataPtr = (ARUint8*)calloc(img->w * img->h * 4, sizeof(ARUint8)); // Allocate space for image data
+	ARUint8* dataPtr = (ARUint8*)calloc(img->w * img->h * 4, sizeof(ARUint8)); // Allocate space for image data
 
 	// Write image data to the dataPtr variable
 	for (int y = 0; y < img->h; y++)

@@ -20,6 +20,6 @@ Uint32 getpixel(SDL_Surface *surface, int x, int y);
 	w: Will be assigned the width of image
 	h: Will be assigned the height of the image
 */
-ARUint8* loadImage(char* filename, ARUint8* dataPtr, int* w, int* h);
+ARUint8* loadImage(char* filename, int* w, int* h);
 
 #endif
