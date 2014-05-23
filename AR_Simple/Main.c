@@ -79,17 +79,37 @@ double get_dist(double* coord_1, double* coord_2){
 	return  result;
 }
 
-void get_pair(double** pair, ARMarkerInfo *marker_info, int marker_num){
+/*
+	Get the position of the 2 markers to use for calulcating the center (the location of
+	the sphere)
+	pair: returned with position of the 2 markers. e.g. pair[0] = [1234,293], pair[1] = [1234,2382]
+	marker_info: taken from arDetectMarker function
+	marker_num: total number of markers detected
+	pattern_num: how many patterns were identified
+*/
+void get_pair(double** pair, ARMarkerInfo *marker_info, int marker_num, int pattern_num)
+{
 	double max = 0;
 	double curr = 0;
-	for (int i = 0; i < marker_num; i++){
-		for (int j = 0; j < marker_num, j != i; j++){
-			if (marker_info[i].id != -1 && marker_info[i].id != -1){
-				curr = get_dist(marker_info[i].pos, marker_info[j].pos);
-				if (curr > max) {
-					max = curr;
-					pair[0] = marker_info[i].pos;
-					pair[1] = marker_info[j].pos;
+	if (pattern_num == 4) // If all 4 patterns found, just return position of A and G marker
+	{
+		for (int i = 0; i < marker_num; i++)
+		{
+			if (marker_info[i].id == 0) pair[0] = marker_info[i].pos;
+			else if (marker_info[i].id == 3) pair[1] = marker_info[i].pos;
+		}
+	}
+	else // If 3 patterns found, find the 2 markers furthest apart
+	{
+		for (int i = 0; i < marker_num; i++) {
+			for (int j = 0; j < marker_num, j != i; j++) {
+				if (marker_info[i].id != -1 && marker_info[i].id != -1) {
+					curr = get_dist(marker_info[i].pos, marker_info[j].pos);
+					if (curr > max) {
+						max = curr;
+						pair[0] = marker_info[i].pos;
+						pair[1] = marker_info[j].pos;
+					}
 				}
 			}
 		}
@@ -167,7 +187,7 @@ static void mainLoop(char* img_name)
 	{
 		double midpoint[2];
 		double pair[2][2];
-		get_pair(&pair, marker_info, marker_num);
+		get_pair(&pair, marker_info, marker_num, pattern_count);
 		get_midpoint(&midpoint, &pair);
 		printf("Center is: %5i,%5i\n", (int)midpoint[0], (int)midpoint[1]);
 		writeLine(img_name, (int)midpoint[0], (int)midpoint[1]);
