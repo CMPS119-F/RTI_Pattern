@@ -39,6 +39,9 @@ ARParam         cparam;
 ObjectData_T* object;
 int objectNum = -1; // Number of patterns in file pointed to by patt_name
 
+int** centers;		// Contains the center for each image
+int img_num = 0;    // The currect image the program is on
+
 /*
 	Initialize ARToolkit
 */
@@ -99,6 +102,29 @@ void get_midpoint(double* midpoint, double** pair){
 }
 
 /*
+	Calculate the average sphere location using x,y data from 'centers' array
+	Writes the result to the output.csv file
+	num: number of images in centers array
+*/
+void calculateAverage(int num)
+{
+	int rx = 0;
+	int ry = 0;
+	for (int i = 0; i < num; i++) // Calculate average center for all images
+	{
+		if (centers[i][0] != 0 && centers[i][1] != 0) // Ignores images that pattern detection failed on
+		{
+			rx += centers[i][0];
+			ry += centers[i][1];
+		}
+		else num--;
+	}
+	rx /= num; ry /= num;
+	printf("Average location: %i, %i\n", rx, ry);
+	writeLine("Average", rx, ry);
+}
+
+/*
 	Main loop for ARToolkit. Runs until program exits
 	img_name: The name of the image file. This is used when writing results to csv file
 */
@@ -145,11 +171,15 @@ static void mainLoop(char* img_name)
 		get_midpoint(&midpoint, &pair);
 		printf("Center is: %5i,%5i\n", (int)midpoint[0], (int)midpoint[1]);
 		writeLine(img_name, (int)midpoint[0], (int)midpoint[1]);
+		centers[img_num][0] = (int)midpoint[0]; // Save the x position
+		centers[img_num++][1] = (int)midpoint[1]; // Save the y position
 	}
 	else
 	{
 		printf("%i patterns isnt enough to find a center point!\n", marker_num);
 		writeLine(img_name, 0, 0);
+		centers[img_num][0] = 0; // Save the x position
+		centers[img_num++][1] = 0; // Save the y position
 	}
 }
 
@@ -170,6 +200,9 @@ int main(int argc, char **argv)
 		}
 	}
 
+	centers = calloc((argc - 1), sizeof(int)); // Allocate space to hold sphere location for each image
+	for (int i = 0; i < argc - 1; i++) centers[i] = calloc(2, sizeof(int));
+
 	createOutputFile(); // Delete any old output.csv file and create a fresh one
 	for (int i = 1; i < argc; i++) // For each input image
 	{
@@ -185,6 +218,9 @@ int main(int argc, char **argv)
 		free(dataPtr);
 		printf("=================== Done! ===================\n\n");
 	}
+
+	calculateAverage(argc - 1);
+
 	printf("============================\n");
 	printf("See output.csv for results\n");
 	printf("============================\n");
