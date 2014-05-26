@@ -33,7 +33,7 @@ The program detects patterns consistently. As long as at least 3 patterns are vi
 - Pattern detection may fail on large images with the message "Marker detection (arDetectMarker) failed on example_image.jpg. Skipping this image...". The exact cause has not been identified, but it may be due to embedded color profiles. It is recommended to simply try opening the image with Photoshop or GIMP, discard the embedded color profile, and re-save the image.
 
 ### Compiling
-This project is 'self-contained'. The libs, dll's, and headers for the ARToolkit the SDL libraries are included. You should be able to 'git clone' this repository, open the .sln file with Visual Studio (we used 2013), and compile with any issues.
+This project is 'self-contained'. The libs, dll's, and headers for the ARToolkit the SDL libraries are included. You should be able to 'git clone' this repository, open the .sln file with Visual Studio (we used 2013), and compile without any issues.
 
 ### The Team
 - Skylar Brown
