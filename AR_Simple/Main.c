@@ -142,7 +142,7 @@ void calculateAverage(int num)
 	}
 	rx /= num; ry /= num;
 	printf("Average location: %i, %i\n", rx, ry);
-	writeLine("Average", rx, ry);
+	writeLine("Average", rx, ry, 0,0,0,0,0,0,0,0);
 }
 
 /*
@@ -165,6 +165,8 @@ static void mainLoop(char* img_name)
 	printf("%d potential markers found\n", marker_num);
 	printf("The following patterns have been identified: ");
 	int pattern_count = 0;
+	int marker_loc[8]; // For saving x,y positions of each marker
+	for (int i = 0; i < 8; i++) marker_loc[i] = 0;
 
 	for (int i = 0; i < marker_num; i++)
 	{
@@ -175,6 +177,8 @@ static void mainLoop(char* img_name)
 			{
 				if (marker_info[i].id == object[j].id)
 				{
+					marker_loc[marker_info[i].id * 2] = marker_info[i].pos[0]; // Save x position
+					marker_loc[marker_info[i].id * 2 + 1] = marker_info[i].pos[1]; // Save y position
 					printf("%s ", object[j].name);
 					break;
 				}
@@ -191,14 +195,22 @@ static void mainLoop(char* img_name)
 		get_pair(&pair, marker_info, marker_num, pattern_count);
 		get_midpoint(&midpoint, &pair);
 		printf("Center is: %5i,%5i\n", (int)midpoint[0], (int)midpoint[1]);
-		writeLine(img_name, (int)midpoint[0], (int)midpoint[1]);
+		writeLine(img_name, (int)midpoint[0], (int)midpoint[1],
+			marker_loc[0], marker_loc[1],
+			marker_loc[2], marker_loc[3],
+			marker_loc[4], marker_loc[5],
+			marker_loc[6], marker_loc[7]);
 		centers[img_num][0] = (int)midpoint[0]; // Save the x position
 		centers[img_num++][1] = (int)midpoint[1]; // Save the y position
 	}
 	else
 	{
 		printf("%i patterns isnt enough to find a center point!\n", marker_num);
-		writeLine(img_name, 0, 0);
+		writeLine(img_name, 0, 0,
+			marker_loc[0], marker_loc[1],
+			marker_loc[2], marker_loc[3],
+			marker_loc[4], marker_loc[5],
+			marker_loc[6], marker_loc[7]);
 		centers[img_num][0] = 0; // Save the x position
 		centers[img_num++][1] = 0; // Save the y position
 	}
