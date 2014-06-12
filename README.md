@@ -23,7 +23,7 @@ This program will recognize a special pattern, found in **Pattern.pdf**, in an i
 	- Command-line method:
 		- cd into the directory containing the program
 		- Run as: *detect_sphere.exe image1.jpg image2.jpg image3.jpg*
-3. You will now see a file **output.csv**. This file will contain the detected location (center) of the sphere for each image. The last line contains the average center if multiple images were used.
+3. You will now see a file **output.csv**. This file will contain the detected location (center) of the sphere for each image. It will also contain the location of each pattern (A,B,D, and G). The last line contains the average center if multiple images were used.
 	- If the program failed to detect patterns in an image the location will show up as 0,0
 
 ### Results
@@ -33,7 +33,16 @@ The program detects patterns consistently. As long as at least 3 patterns are vi
 - Pattern detection may fail on large images with the message "Marker detection (arDetectMarker) failed on example_image.jpg. Skipping this image...". The exact cause has not been identified, but it may be due to embedded color profiles. It is recommended to simply try opening the image with Photoshop or GIMP, discard the embedded color profile, and re-save the image.
 
 ### Compiling
-This project is 'self-contained'. The libs, dll's, and headers for the ARToolkit the SDL libraries are included. You should be able to 'git clone' this repository, open the .sln file with Visual Studio (we used 2013), and compile without any issues.
+This project is 'self-contained'. The Windows version of the libs, dll's, and headers for the ARToolkit the SDL libraries are included. You should be able to 'git clone' this repository, open the .sln file with Visual Studio (we used 2013), and compile without any issues.
+
+### MAC and Linux
+Both ARToolkit and SDL have MAC and Linux versions. Although we have not tested it, the program should compile on these platforms given you have set up the includes and linking properly. Note: in order to support large images we increased the buffer size in ARToolkit to 5000x5000 and recompiled the ARToolkit libs. You will need to do this for the MAC and Linux versions. Edit the variables in the file /lib/SRC/AR/arLabeling.c like so:
+
+```C
+#define HARDCODED_BUFFER_WIDTH  5000
+#define HARDCODED_BUFFER_HEIGHT 5000
+```
+And recompile the libs.
 
 ### The Team
 - Skylar Brown
